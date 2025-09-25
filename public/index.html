@@ -3,69 +3,780 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Campus Connect Chatbot</title>
+  <title>Campus Connect - AI Education Assistant</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://rsms.me/" />
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+    body { 
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji"; 
+    }
     .scrollbar-hidden::-webkit-scrollbar { display: none; }
     .scrollbar-hidden { -ms-overflow-style: none; scrollbar-width: none; }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+    .typing-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #9ca3af;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+    .typing-indicator:nth-child(1) { animation-delay: -0.32s; }
+    .typing-indicator:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes typing {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .pulse-glow {
+      animation: pulseGlow 2s infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+    }
+    .shimmer {
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+    }
+    @keyframes floating {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .neon-glow {
+      box-shadow: 0 0 5px rgba(99, 102, 241, 0.5), 0 0 10px rgba(99, 102, 241, 0.3), 0 0 15px rgba(99, 102, 241, 0.1);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .professional-shadow {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    }
+    .elevated-card {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    }
+    .premium-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .sidebar-gradient {
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+    /* Performance overrides: disable animations, transitions, heavy shadows, and blur */
+    .fade-in,
+    .floating,
+    .pulse-glow,
+    .shimmer,
+    .typing-indicator {
+      animation: none !important;
+    }
+    .card-hover,
+    .professional-shadow,
+    .elevated-card,
+    .neon-glow {
+      transition: none !important;
+      box-shadow: none !important;
+    }
+    .card-hover:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    .glass-effect,
+    .glass-card {
+      backdrop-filter: none !important;
+      background: #ffffff !important;
+    }
+    /* Disable backdrop blur on navbar overlay */
+    .premium-gradient .absolute.inset-0 { backdrop-filter: none !important; }
+    /* Reduce border effects for performance */
+    .border,
+    .border-slate-200\/50,
+    .border-slate-200 { border-color: #e5e7eb !important; }
+
+    /* Scrolling performance improvements */
+    html, body { scroll-behavior: auto; }
+    #messages, #chat-history {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      overflow-anchor: auto;
+      contain: content;
+    }
   </style>
   <link rel="icon" href="data:," />
- </head>
-<body class="bg-slate-50 min-h-screen">
-  <div class="max-w-3xl mx-auto p-4 sm:p-6">
-    <header class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-lg bg-indigo-600 text-white grid place-items-center font-semibold">CC</div>
-      <div>
-        <h1 class="text-xl font-semibold text-slate-900">Campus Connect</h1>
-        <p class="text-slate-500 text-sm">Ask anything about campus life, academics, or events.</p>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+  <!-- Navigation -->
+  <nav class="premium-gradient shadow-2xl relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/5"></div>
+    <div class="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
+      <div class="flex justify-between items-center h-24">
+        <div class="flex items-center space-x-6">
+          <div class="w-14 h-14 rounded-3xl bg-white/25 backdrop-blur-sm text-white grid place-items-center font-bold text-2xl floating neon-glow">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-white text-gradient">Campus Connect</h1>
+            <p class="text-white/95 text-base font-semibold tracking-wide">AI Education Assistant</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button id="voice-toggle" class="text-white/85 hover:text-white p-4 rounded-2xl hover:bg-white/15 transition-all duration-300 hover:scale-110 professional-shadow" title="Toggle Voice Assistant">
+            <i id="voice-icon" class="fas fa-microphone-slash text-xl"></i>
+          </button>
+          <button id="lang-toggle" class="text-white/85 hover:text-white p-4 rounded-2xl hover:bg-white/15 transition-all duration-300 hover:scale-110 flex items-center space-x-3 professional-shadow">
+            <i class="fas fa-language text-xl"></i>
+            <span id="lang-text" class="text-base font-semibold">English</span>
+          </button>
+          <button id="stats-btn" class="text-white/85 hover:text-white p-4 rounded-2xl hover:bg-white/15 transition-all duration-300 hover:scale-110 professional-shadow" title="View Statistics">
+            <i class="fas fa-chart-bar text-xl"></i>
+          </button>
+          <button id="settings-btn" class="text-white/85 hover:text-white p-4 rounded-2xl hover:bg-white/15 transition-all duration-300 hover:scale-110 professional-shadow" title="Settings">
+            <i class="fas fa-cog text-xl"></i>
+          </button>
+        </div>
       </div>
-    </header>
+    </div>
+  </nav>
 
-    <main class="bg-white border border-slate-200 rounded-2xl shadow-sm">
-      <div id="messages" class="h-[60vh] p-4 overflow-y-auto scrollbar-hidden">
-        <div class="flex gap-3 items-start">
-          <div class="w-8 h-8 rounded-md bg-slate-200 grid place-items-center text-slate-700">🤖</div>
-          <div class="bg-slate-100 rounded-2xl rounded-tl-none px-4 py-3 text-slate-800 max-w-[80%]">Hi! I’m your Campus Connect assistant. How can I help today?</div>
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <div id="sidebar" class="w-80 sidebar-gradient border-r border-slate-200/50 shadow-2xl transition-all duration-300 ease-in-out transform -translate-x-full lg:translate-x-0">
+      <!-- Sidebar Header -->
+      <div class="p-8 border-b border-slate-200/50 bg-gradient-to-r from-indigo-50/80 to-purple-50/80 backdrop-blur-sm">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-slate-900 text-gradient" data-en="Chat History" data-hi="चैट इतिहास">Chat History</h2>
+          <button id="sidebar-close" class="lg:hidden p-3 text-slate-500 hover:text-slate-700 rounded-xl hover:bg-slate-100/80 transition-all duration-200">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <button id="new-chat-btn" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 elevated-card hover:shadow-2xl flex items-center justify-center gap-3 group">
+          <i class="fas fa-plus text-xl group-hover:rotate-90 transition-transform duration-300"></i>
+          <span class="text-lg" data-en="New Chat" data-hi="नई चैट">New Chat</span>
+        </button>
+      </div>
+      
+      <!-- Chat History List -->
+      <div id="chat-history" class="flex-1 overflow-y-auto p-6 space-y-3">
+        <!-- Chat history items will be dynamically added here -->
+      </div>
+      
+      <!-- Sidebar Footer -->
+      <div class="p-6 border-t border-slate-200/50 bg-slate-50/80 backdrop-blur-sm">
+        <div class="text-sm text-slate-600 text-center font-medium">
+          <i class="fas fa-shield-alt text-indigo-500 mr-2"></i>
+          <span data-en="Chats are saved locally" data-hi="चैट स्थानीय रूप से सहेजे जाते हैं">Chats are saved locally</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Mobile Sidebar Toggle -->
+      <div class="lg:hidden p-6 border-b border-slate-200/50 bg-white/80 backdrop-blur-sm">
+        <button id="sidebar-toggle" class="p-3 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100/80 transition-all duration-200 professional-shadow">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6">
+    <!-- Stats Cards -->
+    <div id="stats-cards" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div class="rounded-2xl p-6 border border-slate-200">
+        <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-100/60 to-blue-200/60 rounded-full -translate-y-20 translate-x-20 opacity-60"></div>
+        <div class="relative flex items-center justify-between">
+          <div>
+            <p class="text-slate-600 text-sm font-bold uppercase tracking-wider mb-3">Total Colleges</p>
+            <p id="college-count" class="text-5xl font-black text-slate-900 text-gradient mb-2">-</p>
+            <p class="text-slate-500 text-sm font-semibold">Institutions available</p>
+          </div>
+          <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center">
+            <i class="fas fa-university text-white text-3xl"></i>
+          </div>
+        </div>
+      </div>
+      <div class="rounded-2xl p-6 border border-slate-200">
+        <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-green-100/60 to-green-200/60 rounded-full -translate-y-20 translate-x-20 opacity-60"></div>
+        <div class="relative flex items-center justify-between">
+          <div>
+            <p class="text-slate-600 text-sm font-bold uppercase tracking-wider mb-3">Scholarships</p>
+            <p id="scholarship-count" class="text-5xl font-black text-slate-900 text-gradient mb-2">-</p>
+            <p class="text-slate-500 text-sm font-semibold">Financial aid options</p>
+          </div>
+          <div class="w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center">
+            <i class="fas fa-award text-white text-3xl"></i>
+          </div>
+        </div>
+      </div>
+      <div class="rounded-2xl p-6 border border-slate-200">
+        <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-100/60 to-purple-200/60 rounded-full -translate-y-20 translate-x-20 opacity-60"></div>
+        <div class="relative flex items-center justify-between">
+          <div>
+            <p class="text-slate-600 text-sm font-bold uppercase tracking-wider mb-3">Universities</p>
+            <p id="university-count" class="text-5xl font-black text-slate-900 text-gradient mb-2">-</p>
+            <p class="text-slate-500 text-sm font-semibold">Higher education partners</p>
+          </div>
+          <div class="w-16 h-16 bg-purple-600 rounded-2xl flex items-center justify-center">
+            <i class="fas fa-school text-white text-3xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mb-16 fade-in">
+      <div class="flex items-center justify-between mb-10">
+        <h2 class="text-4xl font-black text-slate-900 text-gradient" data-en="Quick Actions" data-hi="त्वरित कार्य">Quick Actions</h2>
+        <div class="hidden md:block w-24 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full"></div>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <button class="quick-action-btn bg-blue-600 text-white p-6 rounded-2xl" data-action="colleges">
+          <div class="absolute inset-0 bg-white/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="relative">
+            <i class="fas fa-university text-4xl mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+            <p class="font-bold text-xl mb-2" data-en="Browse Colleges" data-hi="कॉलेज देखें">Browse Colleges</p>
+            <p class="text-blue-100 text-sm font-semibold" data-en="Explore institutions" data-hi="संस्थानों का अन्वेषण करें">Explore institutions</p>
+          </div>
+        </button>
+        <button class="quick-action-btn bg-green-600 text-white p-6 rounded-2xl" data-action="scholarships">
+          <div class="absolute inset-0 bg-white/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="relative">
+            <i class="fas fa-award text-4xl mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+            <p class="font-bold text-xl mb-2" data-en="Find Scholarships" data-hi="छात्रवृत्ति खोजें">Find Scholarships</p>
+            <p class="text-green-100 text-sm font-semibold" data-en="Financial aid options" data-hi="वित्तीय सहायता विकल्प">Financial aid options</p>
+          </div>
+        </button>
+        <button class="quick-action-btn bg-purple-600 text-white p-6 rounded-2xl" data-action="fees">
+          <div class="absolute inset-0 bg-white/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="relative">
+            <i class="fas fa-rupee-sign text-4xl mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+            <p class="font-bold text-xl mb-2" data-en="Compare Fees" data-hi="फीस की तुलना">Compare Fees</p>
+            <p class="text-purple-100 text-sm font-semibold" data-en="Cost analysis" data-hi="लागत विश्लेषण">Cost analysis</p>
+          </div>
+        </button>
+        <button class="quick-action-btn bg-orange-600 text-white p-6 rounded-2xl" data-action="placements">
+          <div class="absolute inset-0 bg-white/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="relative">
+            <i class="fas fa-briefcase text-4xl mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+            <p class="font-bold text-xl mb-2" data-en="Placement Info" data-hi="प्लेसमेंट जानकारी">Placement Info</p>
+            <p class="text-orange-100 text-sm font-semibold" data-en="Career opportunities" data-hi="करियर के अवसर">Career opportunities</p>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 fade-in">
+      <!-- Chat Header -->
+      <div class="bg-indigo-700 px-6 py-5 relative overflow-hidden">
+        <div class="relative flex items-center space-x-4">
+          <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm text-white grid place-items-center floating">
+            <i class="fas fa-robot text-xl"></i>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-bold text-white" data-en="AI Assistant" data-hi="AI सहायक">AI Assistant</h3>
+            <p class="text-white/90 text-sm font-medium" data-en="Ask me anything about colleges, courses, or scholarships" data-hi="कॉलेज, पाठ्यक्रम या छात्रवृत्ति के बारे में कुछ भी पूछें">Ask me anything about colleges, courses, or scholarships</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse pulse-glow"></div>
+            <span class="text-white/80 text-xs font-medium" data-en="Online" data-hi="ऑनलाइन">Online</span>
+          </div>
         </div>
       </div>
 
-      <form id="chat-form" class="p-3 border-t border-slate-200 flex items-end gap-2">
-        <textarea id="input" class="flex-1 resize-none rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 text-slate-900 placeholder-slate-400" rows="1" placeholder="Type your question..." required></textarea>
-        <button id="send" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed" type="submit">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M3.478 2.405a.75.75 0 0 1 .846-.17l16.5 7.5a.75.75 0 0 1 0 1.37l-16.5 7.5A.75.75 0 0 1 2.25 18V6a.75.75 0 0 1 1.228-.595L12 12 3.478 2.405Z"/></svg>
-          Send
-        </button>
-      </form>
-    </main>
+      <!-- Messages Area -->
+      <div id="messages" class="h-[60vh] p-6 overflow-y-auto bg-slate-50">
+        <div class="flex gap-6 items-start mb-8 fade-in">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <i class="fas fa-robot text-white text-lg"></i>
+          </div>
+          <div class="bg-white rounded-3xl rounded-tl-none px-8 py-6 shadow-xl border border-slate-200 max-w-[85%] relative">
+            <div class="absolute -top-2 -left-2 w-4 h-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full"></div>
+            <div class="prose prose-slate max-w-none">
+              <h4 class="text-xl font-bold text-slate-900 mb-4 gradient-text" data-en="👋 Welcome to Campus Connect!" data-hi="👋 कैम्पस कनेक्ट में आपका स्वागत है!">👋 Welcome to Campus Connect!</h4>
+              <p class="text-slate-700 mb-4 text-lg" data-en="I'm your AI education assistant. I can help you with:" data-hi="मैं आपका AI शिक्षा सहायक हूं। मैं आपकी इन चीजों में मदद कर सकता हूं:">I'm your AI education assistant. I can help you with:</p>
+              <ul class="text-slate-600 space-y-3">
+                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3 text-lg"></i><span class="font-medium" data-en="College information and comparisons" data-hi="कॉलेज की जानकारी और तुलना">College information and comparisons</span></li>
+                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3 text-lg"></i><span class="font-medium" data-en="Scholarship opportunities" data-hi="छात्रवृत्ति के अवसर">Scholarship opportunities</span></li>
+                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3 text-lg"></i><span class="font-medium" data-en="Course details and fees" data-hi="पाठ्यक्रम विवरण और फीस">Course details and fees</span></li>
+                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3 text-lg"></i><span class="font-medium" data-en="Placement statistics" data-hi="प्लेसमेंट आंकड़े">Placement statistics</span></li>
+                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3 text-lg"></i><span class="font-medium" data-en="Admission guidance" data-hi="प्रवेश मार्गदर्शन">Admission guidance</span></li>
+              </ul>
+              <p class="text-slate-600 mt-6 text-lg font-medium" data-en="How can I assist you today?" data-hi="आज मैं आपकी कैसे मदद कर सकता हूं?">How can I assist you today?</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <div class="border-t border-slate-200 p-6 bg-white">
+        <form id="chat-form" class="flex items-end gap-6">
+          <div class="flex-1 relative">
+            <textarea 
+              id="input" 
+              class="w-full resize-none rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 px-6 py-4 text-slate-900 placeholder-slate-400 shadow-lg text-lg font-medium transition-all duration-300" 
+              rows="1" 
+              placeholder="Ask about colleges, courses, scholarships..." 
+              data-en-placeholder="Ask about colleges, courses, scholarships..."
+              data-hi-placeholder="कॉलेज, पाठ्यक्रम, छात्रवृत्ति के बारे में पूछें..."
+              required
+            ></textarea>
+            <div class="absolute bottom-2 right-2 text-xs text-slate-400">
+              <span data-en="Press Enter to send, Shift+Enter for new line" data-hi="भेजने के लिए Enter दबाएं, नई लाइन के लिए Shift+Enter">Press Enter to send, Shift+Enter for new line</span>
+            </div>
+          </div>
+          <button 
+            id="send" 
+            class="inline-flex items-center gap-3 bg-indigo-700 text-white font-semibold px-6 py-4 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed" 
+            type="submit"
+          >
+            <i class="fas fa-paper-plane text-xl"></i>
+            <span class="hidden sm:inline text-lg" data-en="Send" data-hi="भेजें">Send</span>
+          </button>
+        </form>
+      </div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
   <script>
+    // DOM Elements
     const form = document.getElementById('chat-form');
     const input = document.getElementById('input');
     const messages = document.getElementById('messages');
     const sendBtn = document.getElementById('send');
+    const quickActionBtns = document.querySelectorAll('.quick-action-btn');
+    const statsBtn = document.getElementById('stats-btn');
+    const settingsBtn = document.getElementById('settings-btn');
+    const langToggle = document.getElementById('lang-toggle');
+    const langText = document.getElementById('lang-text');
 
-    function addMessage(text, role, opts = {}) {
+    // Stats elements
+    const collegeCount = document.getElementById('college-count');
+    const scholarshipCount = document.getElementById('scholarship-count');
+    const universityCount = document.getElementById('university-count');
+
+    // Language state - English as default
+    let currentLang = 'en';
+    
+    // Voice state
+    let voiceEnabled = false;
+    let speechSynthesis = window.speechSynthesis;
+    let currentUtterance = null;
+    
+    // Chat history state
+    let currentChatId = null;
+    let chatHistory = [];
+    let chatSessions = {};
+
+    // Load stats on page load
+    async function loadStats() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const resp = await fetch('/stats', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        const stats = await resp.json().catch(() => ({ }));
+        collegeCount.textContent = stats.colleges || 0;
+        scholarshipCount.textContent = stats.scholarships || 0;
+        universityCount.textContent = stats.universities || 0;
+      } catch (error) {
+        console.error('Failed to load stats:', error);
+      }
+    }
+
+    // Voice functionality
+    function speakText(text, language = 'en') {
+      if (!voiceEnabled || !speechSynthesis) return;
+      
+      // Stop any current speech
+      speechSynthesis.cancel();
+      
+      // Clean text for speech (remove markdown formatting)
+      const cleanText = text.replace(/\*\*(.*?)\*\*/g, '$1')
+                           .replace(/\*(.*?)\*/g, '$1')
+                           .replace(/#{1,6}\s/g, '')
+                           .replace(/```[\s\S]*?```/g, '')
+                           .replace(/`(.*?)`/g, '$1')
+                           .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+                           .replace(/\n+/g, ' ')
+                           .trim();
+      
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      
+      // Set voice based on language
+      const voices = speechSynthesis.getVoices();
+      let selectedVoice = null;
+      
+      if (language === 'hi') {
+        // Try to find Hindi voice
+        selectedVoice = voices.find(voice => 
+          voice.lang.startsWith('hi') || 
+          voice.name.includes('Hindi') || 
+          voice.name.includes('India')
+        );
+      } else {
+        // Try to find English voice
+        selectedVoice = voices.find(voice => 
+          voice.lang.startsWith('en') && 
+          (voice.name.includes('Google') || voice.name.includes('Microsoft'))
+        );
+      }
+      
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+      
+      utterance.lang = language === 'hi' ? 'hi-IN' : 'en-US';
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 0.8;
+      
+      currentUtterance = utterance;
+      speechSynthesis.speak(utterance);
+    }
+
+    function toggleVoice() {
+      voiceEnabled = !voiceEnabled;
+      const voiceIcon = document.getElementById('voice-icon');
+      
+      if (voiceEnabled) {
+        voiceIcon.className = 'fas fa-microphone text-lg';
+        voiceIcon.parentElement.title = 'Voice Assistant Enabled - Click to Disable';
+        // Speak a welcome message
+        const welcomeMsg = currentLang === 'en' 
+          ? 'Voice assistant enabled. I will now speak the responses.'
+          : 'आवाज सहायक सक्षम। अब मैं जवाब बोलूंगा।';
+        speakText(welcomeMsg, currentLang);
+      } else {
+        voiceIcon.className = 'fas fa-microphone-slash text-lg';
+        voiceIcon.parentElement.title = 'Voice Assistant Disabled - Click to Enable';
+        speechSynthesis.cancel();
+      }
+      
+      // Save voice preference
+      localStorage.setItem('campus-connect-voice', voiceEnabled);
+    }
+
+    function loadVoicePreference() {
+      const savedVoice = localStorage.getItem('campus-connect-voice');
+      if (savedVoice === 'true') {
+        voiceEnabled = true;
+        document.getElementById('voice-icon').className = 'fas fa-microphone text-lg';
+        document.getElementById('voice-toggle').title = 'Voice Assistant Enabled - Click to Disable';
+      }
+    }
+
+    // Chat history management
+    function generateChatId() {
+      return 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function createNewChat() {
+      currentChatId = generateChatId();
+      chatHistory = [];
+      chatSessions[currentChatId] = {
+        id: currentChatId,
+        title: 'New Chat',
+        messages: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      // Clear messages area
+      messages.innerHTML = '';
+      
+      // Add welcome message
+      addWelcomeMessage();
+      
+      // Update chat history UI
+      updateChatHistoryUI();
+      
+      // Save to localStorage
+      saveChatSessions();
+    }
+
+    function addWelcomeMessage() {
+      const welcomeMessage = currentLang === 'en'
+        ? '👋 Welcome to Campus Connect!\n\nI\'m your AI education assistant. I can help you with:\n\n• College information and comparisons\n• Scholarship opportunities\n• Course details and fees\n• Placement statistics\n• Admission guidance\n\nHow can I assist you today?'
+        : '👋 कैम्पस कनेक्ट में आपका स्वागत है!\n\nमैं आपका AI शिक्षा सहायक हूं। मैं आपकी इन चीजों में मदद कर सकता हूं:\n\n• कॉलेज की जानकारी और तुलना\n• छात्रवृत्ति के अवसर\n• पाठ्यक्रम विवरण और फीस\n• प्लेसमेंट आंकड़े\n• प्रवेश मार्गदर्शन\n\nआज मैं आपकी कैसे मदद कर सकता हूं?';
+      
+      // Add message without saving to history
       const row = document.createElement('div');
-      row.className = 'flex gap-3 items-start my-2';
+      row.className = 'flex gap-6 items-start mb-8 fade-in';
 
       const avatar = document.createElement('div');
-      avatar.className = 'w-8 h-8 rounded-md grid place-items-center text-slate-700 ' + (role === 'user' ? 'bg-indigo-100' : 'bg-slate-200');
-      avatar.textContent = role === 'user' ? '🧑' : '🤖';
+      avatar.className = 'w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg';
+      avatar.innerHTML = '<i class="fas fa-robot text-white text-lg"></i>';
 
       const bubble = document.createElement('div');
-      bubble.className = 'prose prose-slate max-w-none rounded-2xl px-4 py-3 max-w-[80%] ' + (role === 'user' ? 'bg-indigo-50 rounded-tr-none text-indigo-900' : 'bg-slate-50 rounded-tl-none text-slate-800 border border-slate-200');
+      bubble.className = 'prose prose-slate max-w-none rounded-3xl px-8 py-6 max-w-[85%] shadow-xl border relative bg-white rounded-tl-none text-slate-800 border-slate-200';
+
+      // Add decorative element
+      const decor = document.createElement('div');
+      decor.className = 'absolute -top-2 -left-2 w-4 h-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full';
+      bubble.appendChild(decor);
+
+      const html = marked.parse(welcomeMessage);
+      bubble.innerHTML += DOMPurify.sanitize(html);
+
+      row.appendChild(avatar);
+      row.appendChild(bubble);
+      messages.appendChild(row);
+      // Use requestAnimationFrame to avoid jank when autoscrolling
+      window.requestAnimationFrame(() => {
+        messages.scrollTop = messages.scrollHeight;
+      });
+    }
+
+    function saveMessage(role, text) {
+      if (!currentChatId) return;
+      
+      const message = {
+        role: role,
+        text: text,
+        timestamp: new Date().toISOString()
+      };
+      
+      chatSessions[currentChatId].messages.push(message);
+      chatSessions[currentChatId].updatedAt = new Date().toISOString();
+      
+      // Update chat title if it's the first user message
+      if (role === 'user' && chatSessions[currentChatId].messages.filter(m => m.role === 'user').length === 1) {
+        chatSessions[currentChatId].title = text.length > 30 ? text.substring(0, 30) + '...' : text;
+        updateChatHistoryUI();
+      }
+      
+      saveChatSessions();
+    }
+
+    function loadChatSessions() {
+      const saved = localStorage.getItem('campus-connect-chats');
+      if (saved) {
+        try {
+          chatSessions = JSON.parse(saved);
+          updateChatHistoryUI();
+        } catch (e) {
+          console.error('Failed to load chat sessions:', e);
+        }
+      }
+    }
+
+    function saveChatSessions() {
+      localStorage.setItem('campus-connect-chats', JSON.stringify(chatSessions));
+    }
+
+    function updateChatHistoryUI() {
+      const chatHistoryContainer = document.getElementById('chat-history');
+      chatHistoryContainer.innerHTML = '';
+      
+      const sessions = Object.values(chatSessions).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      
+      sessions.forEach(session => {
+        const chatItem = document.createElement('div');
+        chatItem.className = `p-4 rounded-2xl cursor-pointer transition-all duration-300 hover:bg-slate-100/80 group professional-shadow ${session.id === currentChatId ? 'bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 elevated-card' : 'hover:shadow-lg'}`;
+        chatItem.innerHTML = `
+          <div class="flex items-start justify-between">
+            <div class="flex-1 min-w-0">
+              <h3 class="text-base font-bold text-slate-900 truncate mb-2">${session.title}</h3>
+              <p class="text-sm text-slate-500 font-medium">${new Date(session.updatedAt).toLocaleDateString()}</p>
+              <div class="flex items-center mt-2">
+                <div class="w-2 h-2 bg-indigo-500 rounded-full mr-2"></div>
+                <span class="text-xs text-slate-400 font-semibold">${session.messages.length} messages</span>
+              </div>
+            </div>
+            <button class="opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-red-500 transition-all duration-200 rounded-lg hover:bg-red-50" onclick="deleteChat('${session.id}', event)">
+              <i class="fas fa-trash text-sm"></i>
+            </button>
+          </div>
+        `;
+        
+        chatItem.addEventListener('click', () => loadChat(session.id));
+        chatHistoryContainer.appendChild(chatItem);
+      });
+    }
+
+    function loadChat(chatId) {
+      if (!chatSessions[chatId]) return;
+      
+      currentChatId = chatId;
+      const session = chatSessions[chatId];
+      
+      // Clear messages area
+      messages.innerHTML = '';
+      
+      // Load messages
+      session.messages.forEach(msg => {
+        addMessage(msg.text, msg.role, { renderMarkdown: msg.role === 'bot' });
+      });
+      
+      // Update UI
+      updateChatHistoryUI();
+    }
+
+    function deleteChat(chatId, event) {
+      event.stopPropagation();
+      
+      if (confirm(currentLang === 'en' ? 'Delete this chat?' : 'इस चैट को हटाएं?')) {
+        delete chatSessions[chatId];
+        
+        if (currentChatId === chatId) {
+          createNewChat();
+        } else {
+          updateChatHistoryUI();
+        }
+        
+        saveChatSessions();
+      }
+    }
+
+    // Sidebar management
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('-translate-x-full');
+    }
+
+    function closeSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.add('-translate-x-full');
+    }
+
+    // Enhanced message function with better styling and speak button
+    function addMessage(text, role, opts = {}) {
+      const row = document.createElement('div');
+      row.className = 'flex gap-6 items-start mb-8 fade-in';
+
+      const avatar = document.createElement('div');
+      if (role === 'user') {
+        avatar.className = 'w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold shadow-lg';
+        avatar.innerHTML = '<i class="fas fa-user text-lg"></i>';
+      } else {
+        avatar.className = 'w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg';
+        avatar.innerHTML = '<i class="fas fa-robot text-white text-lg"></i>';
+      }
+
+      const bubble = document.createElement('div');
+      bubble.className = 'prose prose-slate max-w-none rounded-3xl px-8 py-6 max-w-[85%] shadow-xl border relative ' + 
+        (role === 'user' 
+          ? 'bg-gradient-to-r from-indigo-50 to-purple-50 rounded-tr-none text-indigo-900 border-indigo-200' 
+          : 'bg-white rounded-tl-none text-slate-800 border-slate-200'
+        );
+
+      // Add decorative element for bot messages
+      if (role === 'bot') {
+        const decor = document.createElement('div');
+        decor.className = 'absolute -top-2 -left-2 w-4 h-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full';
+        bubble.appendChild(decor);
+      }
+
       if (role === 'bot' && opts.renderMarkdown) {
         const html = marked.parse(text || '');
-        bubble.innerHTML = DOMPurify.sanitize(html);
+        bubble.innerHTML += DOMPurify.sanitize(html);
       } else {
-        bubble.textContent = text;
+        bubble.innerHTML += text;
       }
+
+      // Add speak button for bot messages
+      if (role === 'bot') {
+        const speakButton = document.createElement('button');
+        speakButton.className = 'ml-3 p-3 text-slate-400 hover:text-indigo-600 transition-all duration-300 rounded-xl hover:bg-indigo-50 hover:scale-110';
+        speakButton.innerHTML = '<i class="fas fa-volume-up text-lg"></i>';
+        speakButton.title = currentLang === 'en' ? 'Speak this message' : 'इस संदेश को बोलें';
+        speakButton.addEventListener('click', () => {
+          speakText(text, currentLang);
+        });
+        
+        const bubbleContainer = document.createElement('div');
+        bubbleContainer.className = 'flex items-start justify-between';
+        bubbleContainer.appendChild(bubble);
+        bubbleContainer.appendChild(speakButton);
+        
+        row.appendChild(avatar);
+        row.appendChild(bubbleContainer);
+      } else {
+        row.appendChild(avatar);
+        row.appendChild(bubble);
+      }
+
+      messages.appendChild(row);
+      messages.scrollTop = messages.scrollHeight;
+      
+      // Save message to chat history
+      saveMessage(role, text);
+    }
+
+    // Typing indicator
+    function showTypingIndicator() {
+      const row = document.createElement('div');
+      row.className = 'flex gap-6 items-start mb-8 fade-in';
+      row.id = 'typing-indicator';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg';
+      avatar.innerHTML = '<i class="fas fa-robot text-white text-lg"></i>';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bg-white rounded-3xl rounded-tl-none px-8 py-6 shadow-xl border border-slate-200 max-w-[85%] relative';
+      
+      // Add decorative element
+      const decor = document.createElement('div');
+      decor.className = 'absolute -top-2 -left-2 w-4 h-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full';
+      bubble.appendChild(decor);
+      
+      bubble.innerHTML += `
+        <div class="flex items-center space-x-3">
+          <span class="text-slate-600 text-lg font-medium">AI is thinking</span>
+          <div class="flex space-x-2 ml-3">
+            <div class="typing-indicator"></div>
+            <div class="typing-indicator"></div>
+            <div class="typing-indicator"></div>
+          </div>
+        </div>
+      `;
 
       row.appendChild(avatar);
       row.appendChild(bubble);
@@ -73,12 +784,24 @@
       messages.scrollTop = messages.scrollHeight;
     }
 
+    function hideTypingIndicator() {
+      const indicator = document.getElementById('typing-indicator');
+      if (indicator) {
+        indicator.remove();
+      }
+    }
+
+    // API calls
     async function sendPrompt(prompt) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
       const resp = await fetch('/campus-connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompts: prompt })
+        body: JSON.stringify({ prompts: prompt }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));
         throw new Error(err.error || 'Request failed');
@@ -87,6 +810,70 @@
       return data.text || '';
     }
 
+    // Language switching functionality
+    function switchLanguage() {
+      currentLang = currentLang === 'en' ? 'hi' : 'en';
+      
+      // Update all elements with data attributes
+      document.querySelectorAll('[data-en], [data-hi]').forEach(element => {
+        if (element.dataset[currentLang]) {
+          element.textContent = element.dataset[currentLang];
+        }
+      });
+      
+      // Update placeholder
+      if (input.dataset[`${currentLang}Placeholder`]) {
+        input.placeholder = input.dataset[`${currentLang}Placeholder`];
+      }
+      
+      // Update language toggle text
+      langText.textContent = currentLang === 'en' ? 'हिंदी' : 'English';
+      
+      // Save language preference
+      localStorage.setItem('campus-connect-lang', currentLang);
+    }
+
+    // Load language preference
+    function loadLanguagePreference() {
+      const savedLang = localStorage.getItem('campus-connect-lang');
+      if (savedLang && (savedLang === 'en' || savedLang === 'hi')) {
+        currentLang = savedLang;
+        switchLanguage();
+      }
+    }
+
+    // Quick action handlers
+    const quickActions = {
+      colleges: {
+        en: "Show me all colleges with their details",
+        hi: "सभी कॉलेजों की विस्तृत जानकारी दिखाएं"
+      },
+      scholarships: {
+        en: "List all available scholarships and their eligibility criteria",
+        hi: "सभी उपलब्ध छात्रवृत्तियों और उनकी पात्रता मानदंडों की सूची बनाएं"
+      },
+      fees: {
+        en: "Compare college fees and provide a detailed breakdown",
+        hi: "कॉलेज की फीस की तुलना करें और विस्तृत विवरण प्रदान करें"
+      },
+      placements: {
+        en: "Show placement statistics and top recruiting companies",
+        hi: "प्लेसमेंट आंकड़े और शीर्ष भर्ती कंपनियां दिखाएं"
+      }
+    };
+
+    quickActionBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        const prompt = quickActions[action][currentLang];
+        if (prompt) {
+          input.value = prompt;
+          form.requestSubmit();
+        }
+      });
+    });
+
+    // Chat form submission
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const prompt = input.value.trim();
@@ -95,26 +882,118 @@
 
       addMessage(prompt, 'user');
       sendBtn.disabled = true;
+      
       try {
-        addMessage('Thinking…', 'bot');
+        showTypingIndicator();
         const botText = await sendPrompt(prompt);
-        const bubble = messages.lastChild.querySelector('div:last-child');
-        const html = marked.parse(botText || 'No response');
-        bubble.innerHTML = DOMPurify.sanitize(html);
+        hideTypingIndicator();
+        addMessage(botText, 'bot', { renderMarkdown: true });
+        
+        // Auto-speak response if voice is enabled
+        if (voiceEnabled) {
+          setTimeout(() => {
+            speakText(botText, currentLang);
+          }, 500);
+        }
       } catch (err) {
-        const bubble = messages.lastChild.querySelector('div:last-child');
-        bubble.textContent = 'Error: ' + err.message;
+        hideTypingIndicator();
+        const errorMsg = currentLang === 'en' 
+          ? 'Sorry, I encountered an error: ' + err.message
+          : 'क्षमा करें, मुझे एक त्रुटि का सामना करना पड़ा: ' + err.message;
+        addMessage(errorMsg, 'bot');
+        
+        // Auto-speak error if voice is enabled
+        if (voiceEnabled) {
+          setTimeout(() => {
+            speakText(errorMsg, currentLang);
+          }, 500);
+        }
       } finally {
         sendBtn.disabled = false;
         input.focus();
       }
     });
 
-    // Allow Enter to send, Shift+Enter for newline
+    // Auto-resize textarea
+    input.addEventListener('input', () => {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+    });
+
+    // Keyboard shortcuts
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         form.requestSubmit();
+      }
+    });
+
+    // Voice toggle event
+    const voiceToggle = document.getElementById('voice-toggle');
+    voiceToggle.addEventListener('click', () => {
+      toggleVoice();
+    });
+
+    // Language toggle event
+    langToggle.addEventListener('click', () => {
+      switchLanguage();
+    });
+
+    // Sidebar events
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarClose = document.getElementById('sidebar-close');
+    const newChatBtn = document.getElementById('new-chat-btn');
+
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    sidebarClose.addEventListener('click', closeSidebar);
+    newChatBtn.addEventListener('click', createNewChat);
+
+    // Stats and settings buttons
+    statsBtn.addEventListener('click', () => {
+      loadStats();
+      const statsMessage = currentLang === 'en' 
+        ? 'Here are the current statistics from our database:'
+        : 'यहां हमारे डेटाबेस के वर्तमान आंकड़े हैं:';
+      addMessage(statsMessage, 'bot');
+      
+      const statsData = currentLang === 'en'
+        ? `📊 **Database Statistics**\n\n• **Colleges:** ${collegeCount.textContent}\n• **Scholarships:** ${scholarshipCount.textContent}\n• **Universities:** ${universityCount.textContent}`
+        : `📊 **डेटाबेस आंकड़े**\n\n• **कॉलेज:** ${collegeCount.textContent}\n• **छात्रवृत्तियां:** ${scholarshipCount.textContent}\n• **विश्वविद्यालय:** ${universityCount.textContent}`;
+      addMessage(statsData, 'bot', { renderMarkdown: true });
+    });
+
+    settingsBtn.addEventListener('click', () => {
+      const settingsMessage = currentLang === 'en'
+        ? '⚙️ **Settings**\n\nCurrently available settings:\n• Auto-resize chat input\n• Markdown rendering enabled\n• Real-time typing indicators\n• Quick action buttons\n• Hindi/English language support\n• Voice assistant with multi-language speech\n• Individual message speak buttons\n\nMore settings coming soon!'
+        : '⚙️ **सेटिंग्स**\n\nवर्तमान में उपलब्ध सेटिंग्स:\n• चैट इनपुट का स्वचालित आकार बदलना\n• मार्कडाउन रेंडरिंग सक्षम\n• रियल-टाइम टाइपिंग संकेतक\n• त्वरित कार्य बटन\n• हिंदी/अंग्रेजी भाषा सहायता\n• बहुभाषी भाषण के साथ आवाज सहायक\n• व्यक्तिगत संदेश बोलने के बटन\n\nजल्द ही और सेटिंग्स आ रही हैं!';
+      addMessage(settingsMessage, 'bot', { renderMarkdown: true });
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadLanguagePreference();
+      loadVoicePreference();
+      loadChatSessions();
+      loadStats();
+      
+      // Create new chat if none exists
+      if (Object.keys(chatSessions).length === 0) {
+        createNewChat();
+      } else {
+        // Load the most recent chat
+        const sessions = Object.values(chatSessions).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        if (sessions.length > 0) {
+          loadChat(sessions[0].id);
+        }
+      }
+      
+      input.focus();
+      
+      // Load voices when they become available
+      if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = () => {
+          // Voices loaded
+        };
       }
     });
   </script>

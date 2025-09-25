@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import express from "express";
+import compression from "compression";
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
@@ -8,10 +9,15 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(compression());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public"), { maxAge: "1h", setHeaders: (res, filePath) => {
+  if (filePath.endsWith("index.html")) {
+    res.setHeader("Cache-Control", "no-cache");
+  }
+} }));
 const apiKey = process.env.GEMINI_API_KEY;
 
 if (!apiKey) {
@@ -132,6 +138,20 @@ app.get("/scholarships", (_req, res) => {
   res.json({ count: scholarships.length, results: scholarships });
 });
 
+// Lightweight stats endpoint for fast UI load
+app.get("/stats", (_req, res) => {
+  res.json({
+    colleges: colleges.length,
+    scholarships: scholarships.length,
+    universities: universities.length,
+  });
+});
+
+// Universities endpoint (kept lightweight for now)
+app.get("/universities", (_req, res) => {
+  res.json({ count: universities.length });
+});
+
 app.post("/campus-connect", async (req, res) => {
   try {
     const { prompts } = req.body ?? {};
@@ -184,23 +204,22 @@ async function main(prompts) {
       {
         role: "user",
         parts: [
-          { text: `You are Campus Connect — an LLM designed by Campus Connect. You are a college and scholarships assistant. Answer ONLY using the provided datasets. If unknown, say you don't know.
+          { text: `You are Campus Connect — a college and scholarships assistant. Answer ONLY using the provided datasets. If unknown, say you don't know.
 
-Format the answer for a presentation in clean Markdown:
-- Use a short title (###)
-- Use subsections (####)
-- Use concise bullet points
-- Bold labels for key fields (Fee, Hostel, Branches, Placement, Scholarships)
+Keep answers concise and structured in Markdown:
+- Title (###)
+- Subsections (####)
+- Bullet points, bold labels
 
-Datasets (JSON):
+Datasets (JSON - truncated for performance):
 Universities:
-${JSON.stringify(universities).slice(0, 20000)}
+${JSON.stringify(universities.slice(0, 100)).slice(0, 5000)}
 
 Colleges:
-${JSON.stringify(colleges).slice(0, 80000)}
+${JSON.stringify(colleges.slice(0, 200)).slice(0, 20000)}
 
 Scholarships:
-${JSON.stringify(scholarships).slice(0, 40000)}
+${JSON.stringify(scholarships.slice(0, 200)).slice(0, 12000)}
 
 User question: ${prompt}` }
         ],
