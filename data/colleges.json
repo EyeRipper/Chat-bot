@@ -1,0 +1,138 @@
+[
+  {
+    "name": "Rajasthan College of Engineering",
+    "location": "Jaipur",
+    "branches": ["Computer Science", "Mechanical", "Electrical", "Civil"],
+    "fee": 120000,
+    "hostel": "Available",
+    "placement": {
+      "Computer Science": "90%",
+      "Mechanical": "70%",
+      "Electrical": "75%",
+      "Civil": "65%"
+    },
+    "scholarships": ["Merit Scholarship", "OBC Scholarship"]
+  },
+  {
+    "name": "Pilani Polytechnic",
+    "location": "Pilani",
+    "branches": ["Electronics", "Civil", "Automobile"],
+    "fee": 90000,
+    "hostel": "Available",
+    "placement": {
+      "Electronics": "80%",
+      "Civil": "60%",
+      "Automobile": "70%"
+    },
+    "scholarships": ["SC/ST Scholarship", "Merit Scholarship"]
+  },
+  {
+    "name": "Jaipur Institute of Technology",
+    "location": "Jaipur",
+    "branches": ["Computer Science", "Information Technology", "Mechanical"],
+    "fee": 110000,
+    "hostel": "Not Available",
+    "placement": {
+      "Computer Science": "85%",
+      "Information Technology": "80%",
+      "Mechanical": "70%"
+    },
+    "scholarships": ["Merit Scholarship", "General Scholarship"]
+  },
+  {
+    "name": "Government Engineering College, Ajmer",
+    "location": "Ajmer",
+    "branches": ["CSE", "ECE", "Civil", "Mechanical"],
+    "fee": 95000,
+    "hostel": "Available",
+    "placement": {
+      "CSE": "88%",
+      "ECE": "75%",
+      "Civil": "65%",
+      "Mechanical": "70%"
+    },
+    "scholarships": ["OBC Scholarship", "SC/ST Scholarship"]
+  },
+  {
+    "name": "Government Polytechnic, Udaipur",
+    "location": "Udaipur",
+    "branches": ["Electrical", "Civil", "Mechanical"],
+    "fee": 85000,
+    "hostel": "Not Available",
+    "placement": {
+      "Electrical": "78%",
+      "Civil": "62%",
+      "Mechanical": "68%"
+    },
+    "scholarships": ["Merit Scholarship", "SC/ST Scholarship"]
+  },
+  {
+    "name": "Rajasthan Technical University College",
+    "location": "Kota",
+    "branches": ["Computer Science", "Mechanical", "Civil", "Electrical"],
+    "fee": 100000,
+    "hostel": "Available",
+    "placement": {
+      "Computer Science": "90%",
+      "Mechanical": "72%",
+      "Civil": "66%",
+      "Electrical": "74%"
+    },
+    "scholarships": ["Merit Scholarship", "General Scholarship"]
+  },
+  {
+    "name": "Government Engineering College, Bikaner",
+    "location": "Bikaner",
+    "branches": ["CSE", "ECE", "Civil"],
+    "fee": 98000,
+    "hostel": "Available",
+    "placement": {
+      "CSE": "85%",
+      "ECE": "73%",
+      "Civil": "64%"
+    },
+    "scholarships": ["OBC Scholarship", "SC/ST Scholarship"]
+  },
+  {
+    "name": "Polytechnic College, Jodhpur",
+    "location": "Jodhpur",
+    "branches": ["Electrical", "Mechanical", "Automobile"],
+    "fee": 92000,
+    "hostel": "Not Available",
+    "placement": {
+      "Electrical": "77%",
+      "Mechanical": "70%",
+      "Automobile": "68%"
+    },
+    "scholarships": ["Merit Scholarship", "General Scholarship"]
+  },
+  {
+    "name": "Government College of Engineering, Kota",
+    "location": "Kota",
+    "branches": ["Computer Science", "IT", "Civil", "Mechanical"],
+    "fee": 105000,
+    "hostel": "Available",
+    "placement": {
+      "Computer Science": "89%",
+      "IT": "85%",
+      "Civil": "67%",
+      "Mechanical": "72%"
+    },
+    "scholarships": ["Merit Scholarship", "OBC Scholarship"]
+  },
+  {
+    "name": "Government Polytechnic, Alwar",
+    "location": "Alwar",
+    "branches": ["Electronics", "Computer Science", "Civil"],
+    "fee": 88000,
+    "hostel": "Not Available",
+    "placement": {
+      "Electronics": "80%",
+      "Computer Science": "82%",
+      "Civil": "63%"
+    },
+    "scholarships": ["SC/ST Scholarship", "General Scholarship"]
+  }
+]
+
+

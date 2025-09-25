@@ -1,0 +1,64 @@
+[
+  {
+    "name": "Merit Scholarship",
+    "category": "All",
+    "amount": 50000,
+    "eligibility": "Awarded to students who score 90% or above in their previous academic year."
+  },
+  {
+    "name": "OBC Scholarship",
+    "category": "OBC",
+    "amount": 40000,
+    "eligibility": "OBC category students with 60% or above in the previous exam and household income less than ₹6 Lakh per year."
+  },
+  {
+    "name": "SC/ST Scholarship",
+    "category": "SC/ST",
+    "amount": 45000,
+    "eligibility": "SC/ST category students scoring 50% or above in the previous examination."
+  },
+  {
+    "name": "General Scholarship",
+    "category": "General",
+    "amount": 30000,
+    "eligibility": "General category students scoring 65% or above in the previous academic year."
+  },
+  {
+    "name": "Rajasthan State Engineering Scholarship",
+    "category": "All",
+    "amount": 60000,
+    "eligibility": "Awarded to students enrolled in government engineering colleges of Rajasthan with minimum 75% marks in 12th board exams."
+  },
+  {
+    "name": "Tech Excellence Scholarship",
+    "category": "All",
+    "amount": 55000,
+    "eligibility": "Students excelling in coding competitions, robotics, or innovation projects recognized at state or national level."
+  },
+  {
+    "name": "Women in Engineering Scholarship",
+    "category": "Female",
+    "amount": 50000,
+    "eligibility": "Female students enrolled in engineering courses with at least 60% marks in previous exams."
+  },
+  {
+    "name": "Minority Community Scholarship",
+    "category": "Minority",
+    "amount": 40000,
+    "eligibility": "Students from minority communities with minimum 55% marks and household income below ₹5 Lakh per year."
+  },
+  {
+    "name": "Rural Talent Scholarship",
+    "category": "All",
+    "amount": 35000,
+    "eligibility": "Students from rural areas demonstrating academic excellence (60%+) and participation in social initiatives."
+  },
+  {
+    "name": "Sports and Cultural Scholarship",
+    "category": "All",
+    "amount": 30000,
+    "eligibility": "Students actively participating in sports or cultural activities at state or national level."
+  }
+]
+
+

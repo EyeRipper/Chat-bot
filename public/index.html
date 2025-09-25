@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Connect Chatbot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://rsms.me/" />
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  <style>
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+    .scrollbar-hidden::-webkit-scrollbar { display: none; }
+    .scrollbar-hidden { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+  <link rel="icon" href="data:," />
+ </head>
+<body class="bg-slate-50 min-h-screen">
+  <div class="max-w-3xl mx-auto p-4 sm:p-6">
+    <header class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-lg bg-indigo-600 text-white grid place-items-center font-semibold">CC</div>
+      <div>
+        <h1 class="text-xl font-semibold text-slate-900">Campus Connect</h1>
+        <p class="text-slate-500 text-sm">Ask anything about campus life, academics, or events.</p>
+      </div>
+    </header>
+
+    <main class="bg-white border border-slate-200 rounded-2xl shadow-sm">
+      <div id="messages" class="h-[60vh] p-4 overflow-y-auto scrollbar-hidden">
+        <div class="flex gap-3 items-start">
+          <div class="w-8 h-8 rounded-md bg-slate-200 grid place-items-center text-slate-700">🤖</div>
+          <div class="bg-slate-100 rounded-2xl rounded-tl-none px-4 py-3 text-slate-800 max-w-[80%]">Hi! I’m your Campus Connect assistant. How can I help today?</div>
+        </div>
+      </div>
+
+      <form id="chat-form" class="p-3 border-t border-slate-200 flex items-end gap-2">
+        <textarea id="input" class="flex-1 resize-none rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 text-slate-900 placeholder-slate-400" rows="1" placeholder="Type your question..." required></textarea>
+        <button id="send" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed" type="submit">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M3.478 2.405a.75.75 0 0 1 .846-.17l16.5 7.5a.75.75 0 0 1 0 1.37l-16.5 7.5A.75.75 0 0 1 2.25 18V6a.75.75 0 0 1 1.228-.595L12 12 3.478 2.405Z"/></svg>
+          Send
+        </button>
+      </form>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script>
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+    const sendBtn = document.getElementById('send');
+
+    function addMessage(text, role, opts = {}) {
+      const row = document.createElement('div');
+      row.className = 'flex gap-3 items-start my-2';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'w-8 h-8 rounded-md grid place-items-center text-slate-700 ' + (role === 'user' ? 'bg-indigo-100' : 'bg-slate-200');
+      avatar.textContent = role === 'user' ? '🧑' : '🤖';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'prose prose-slate max-w-none rounded-2xl px-4 py-3 max-w-[80%] ' + (role === 'user' ? 'bg-indigo-50 rounded-tr-none text-indigo-900' : 'bg-slate-50 rounded-tl-none text-slate-800 border border-slate-200');
+      if (role === 'bot' && opts.renderMarkdown) {
+        const html = marked.parse(text || '');
+        bubble.innerHTML = DOMPurify.sanitize(html);
+      } else {
+        bubble.textContent = text;
+      }
+
+      row.appendChild(avatar);
+      row.appendChild(bubble);
+      messages.appendChild(row);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    async function sendPrompt(prompt) {
+      const resp = await fetch('/campus-connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompts: prompt })
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.error || 'Request failed');
+      }
+      const data = await resp.json();
+      return data.text || '';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const prompt = input.value.trim();
+      if (!prompt) return;
+      input.value = '';
+
+      addMessage(prompt, 'user');
+      sendBtn.disabled = true;
+      try {
+        addMessage('Thinking…', 'bot');
+        const botText = await sendPrompt(prompt);
+        const bubble = messages.lastChild.querySelector('div:last-child');
+        const html = marked.parse(botText || 'No response');
+        bubble.innerHTML = DOMPurify.sanitize(html);
+      } catch (err) {
+        const bubble = messages.lastChild.querySelector('div:last-child');
+        bubble.textContent = 'Error: ' + err.message;
+      } finally {
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    });
+
+    // Allow Enter to send, Shift+Enter for newline
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        form.requestSubmit();
+      }
+    });
+  </script>
+</body>
+</html>
+
+
